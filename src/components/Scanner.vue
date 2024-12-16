@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DDV, EditViewer, PerspectiveViewer, CaptureViewer, UiConfig } from 'dynamsoft-document-viewer';
 import "dynamsoft-document-viewer/dist/ddv.css";
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ cameraID?: string }>()
 
@@ -10,8 +10,7 @@ const initialized = ref(false);
 let captureViewer:CaptureViewer|undefined;
 let editViewer:EditViewer|undefined;
 let perspectiveViewer:PerspectiveViewer|undefined;
-onMounted(()=> {
-  console.log(props.cameraID);
+onMounted(() => {
   if (initializing.value === false) {
     initializing.value = true;
     init();
@@ -231,6 +230,10 @@ const init = async () => {
   await selectCamera();
   captureViewer!.play();
 }
+
+watch(() => props.cameraID,()=>{
+	selectCamera();
+})
 
 </script>
 
