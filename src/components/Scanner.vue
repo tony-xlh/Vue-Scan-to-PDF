@@ -3,7 +3,7 @@ import { DDV, EditViewer, PerspectiveViewer, CaptureViewer, UiConfig } from 'dyn
 import "dynamsoft-document-viewer/dist/ddv.css";
 import { onMounted, ref } from 'vue'
 
-defineProps<{ cameraID?: string }>()
+const props = defineProps<{ cameraID?: string }>()
 
 const initializing = ref(false);
 const initialized = ref(false);
@@ -11,11 +11,20 @@ let captureViewer:CaptureViewer|undefined;
 let editViewer:EditViewer|undefined;
 let perspectiveViewer:PerspectiveViewer|undefined;
 onMounted(()=> {
+  console.log(props.cameraID);
   if (initializing.value === false) {
     initializing.value = true;
     init();
   }
 })
+
+const selectCamera = async () => {
+  if (initialized.value && captureViewer && props.cameraID) {
+    await captureViewer.getAllCameras();
+    await captureViewer.selectCamera(props.cameraID);
+  }
+}
+
 const initCaptureViewer = () => {
   const captureViewerUiConfig:UiConfig = {
       type: DDV.Elements.Layout,
@@ -219,6 +228,7 @@ const init = async () => {
   initEditViewer();
   registerEvenets();
   initialized.value = true;
+  await selectCamera();
   captureViewer!.play();
 }
 
